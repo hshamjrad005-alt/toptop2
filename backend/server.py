@@ -166,6 +166,33 @@ def verify_admin(credentials: HTTPAuthorizationCredentials = Depends(security)):
     
     return admin
 
+# User authentication
+def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    if not credentials:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    user_id = verify_token(credentials.credentials)
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    user = users_collection.find_one({"id": user_id}, {"_id": 0, "password": 0})
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    return user
+
 # Initialize sample data
 def init_sample_data():
     # Check if games already exist
