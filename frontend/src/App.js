@@ -524,14 +524,47 @@ export default function App() {
                 متجر الألعاب 2025
               </h1>
             </div>
-            <Button 
-              variant="outline" 
-              onClick={() => setShowAdminLogin(true)}
-              className="text-white border-gray-600 hover:bg-gray-800"
-            >
-              <UserIcon className="w-4 h-4 ml-2" />
-              دخول الإدارة
-            </Button>
+            
+            <div className="flex items-center gap-3">
+              {isLoggedIn && currentUser ? (
+                <>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowUserDashboard(true)}
+                    className="text-white border-gray-600 hover:bg-gray-800"
+                  >
+                    <UserCheckIcon className="w-4 h-4 ml-2" />
+                    {currentUser.full_name}
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    onClick={handleUserLogout}
+                    className="text-white border-gray-600 hover:bg-gray-800"
+                  >
+                    <LogOutIcon className="w-4 h-4 ml-2" />
+                    خروج
+                  </Button>
+                </>
+              ) : (
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowUserAuth(true)}
+                  className="text-white border-gray-600 hover:bg-gray-800"
+                >
+                  <UserPlusIcon className="w-4 h-4 ml-2" />
+                  دخول / تسجيل
+                </Button>
+              )}
+              
+              <Button 
+                variant="outline" 
+                onClick={() => setShowAdminLogin(true)}
+                className="text-white border-gray-600 hover:bg-gray-800"
+              >
+                <UserIcon className="w-4 h-4 ml-2" />
+                دخول الإدارة
+              </Button>
+            </div>
           </div>
         </div>
       </header>
