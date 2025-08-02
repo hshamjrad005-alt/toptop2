@@ -42,6 +42,7 @@ news_collection = db.news
 banners_collection = db.banners
 orders_collection = db.orders
 admins_collection = db.admins
+users_collection = db.users
 
 # Security
 security = HTTPBearer(auto_error=False)
