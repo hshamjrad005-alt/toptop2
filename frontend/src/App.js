@@ -116,6 +116,7 @@ export default function App() {
         setAdminToken(data.token);
         localStorage.setItem('admin_token', data.token);
         setIsAdmin(true);
+        setShowAdminLogin(false);
         setAdminForm({ username: '', password: '' });
       } else {
         alert('بيانات الدخول غير صحيحة');
