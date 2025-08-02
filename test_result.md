@@ -192,8 +192,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "User Registration and Authentication System"
-    - "User Profile Management APIs"
+    - "User Registration and Login UI"
+    - "User Dashboard and Profile Management"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
