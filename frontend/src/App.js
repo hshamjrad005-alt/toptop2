@@ -974,6 +974,115 @@ export default function App() {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* User Dashboard */}
+      {showUserDashboard && currentUser && (
+        <Dialog open={showUserDashboard} onOpenChange={setShowUserDashboard}>
+          <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-right">لوحة تحكم المستخدم</DialogTitle>
+              <DialogDescription className="text-right">
+                إدارة حسابك ومراجعة طلباتك
+              </DialogDescription>
+            </DialogHeader>
+            
+            <Tabs defaultValue="profile" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="profile">الملف الشخصي</TabsTrigger>
+                <TabsTrigger value="orders" onClick={fetchUserOrders}>طلباتي</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="profile" className="space-y-4">
+                <div className="bg-gray-800/50 p-6 rounded-lg">
+                  <h3 className="text-xl font-bold mb-4 text-purple-400">المعلومات الشخصية</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>اسم المستخدم</Label>
+                      <Input
+                        value={currentUser.username}
+                        disabled
+                        className="bg-gray-700 border-gray-600 text-gray-400"
+                      />
+                    </div>
+                    <div>
+                      <Label>الاسم الكامل</Label>
+                      <Input
+                        value={currentUser.full_name}
+                        disabled
+                        className="bg-gray-700 border-gray-600 text-gray-400"
+                      />
+                    </div>
+                    <div>
+                      <Label>البريد الإلكتروني</Label>
+                      <Input
+                        value={currentUser.email}
+                        disabled
+                        className="bg-gray-700 border-gray-600 text-gray-400"
+                      />
+                    </div>
+                    <div>
+                      <Label>رقم الهاتف</Label>
+                      <Input
+                        value={currentUser.phone || 'غير محدد'}
+                        disabled
+                        className="bg-gray-700 border-gray-600 text-gray-400"
+                      />
+                    </div>
+                  </div>
+                  <div className="mt-4 text-sm text-gray-400">
+                    <p>تاريخ التسجيل: {new Date(currentUser.created_at).toLocaleDateString('ar-SA')}</p>
+                    {currentUser.last_login && (
+                      <p>آخر دخول: {new Date(currentUser.last_login).toLocaleDateString('ar-SA')}</p>
+                    )}
+                  </div>
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="orders">
+                <div className="space-y-4">
+                  <h3 className="text-xl font-bold text-purple-400">طلباتي ({userOrders.length})</h3>
+                  {userOrders.length === 0 ? (
+                    <div className="text-center py-8 text-gray-400">
+                      <ShoppingCartIcon className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                      <p>لا توجد طلبات حتى الآن</p>
+                    </div>
+                  ) : (
+                    <div className="grid gap-4">
+                      {userOrders.map(order => (
+                        <Card key={order.id} className="bg-gray-800 border-gray-700">
+                          <CardContent className="p-4">
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                              <div>
+                                <p className="text-sm text-gray-400">اللعبة</p>
+                                <p className="font-semibold">{order.game_name}</p>
+                              </div>
+                              <div>
+                                <p className="text-sm text-gray-400">آي دي اللاعب</p>
+                                <p className="font-semibold">{order.player_id}</p>
+                              </div>
+                              <div>
+                                <p className="text-sm text-gray-400">الكمية والسعر</p>
+                                <p className="font-semibold">{order.amount} - {order.price} {order.currency}</p>
+                              </div>
+                              <div>
+                                <p className="text-sm text-gray-400">التاريخ</p>
+                                <p className="font-semibold">{new Date(order.created_at).toLocaleDateString('ar-SA')}</p>
+                                <Badge variant={order.status === 'pending' ? 'secondary' : 'default'}>
+                                  {order.status === 'pending' ? 'معلق' : 'مكتمل'}
+                                </Badge>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+            </Tabs>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }
