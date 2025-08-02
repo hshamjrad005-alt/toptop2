@@ -468,6 +468,12 @@ class GamingStoreAPITester:
         # Run test suites
         self.test_root_endpoint()
         self.test_public_endpoints()
+        
+        # Test user authentication system (NEW)
+        user_token, user_id = self.test_user_authentication()
+        self.test_user_profile_management(user_token, user_id)
+        
+        # Test admin functionality
         self.test_admin_login()
         self.test_admin_endpoints()
         self.test_order_creation()
