@@ -251,6 +251,17 @@ export default function App() {
   const handlePurchase = (game, packageInfo) => {
     setSelectedGame(game);
     setSelectedPackage(packageInfo);
+    
+    // Pre-fill form if user is logged in
+    if (isLoggedIn && currentUser) {
+      setOrderForm({
+        ...orderForm,
+        customer_name: currentUser.full_name,
+        customer_phone: currentUser.phone || '',
+        customer_email: currentUser.email
+      });
+    }
+    
     setShowOrderDialog(true);
   };
 
