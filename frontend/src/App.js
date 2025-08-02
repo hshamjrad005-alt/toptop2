@@ -457,7 +457,7 @@ export default function App() {
                 <Button type="submit" disabled={loading} className="flex-1">
                   {loading ? 'جاري تسجيل الدخول...' : 'دخول'}
                 </Button>
-                <Button type="button" variant="outline" onClick={() => window.location.reload()}>
+                <Button type="button" variant="outline" onClick={() => setShowAdminLogin(false)}>
                   عودة للموقع
                 </Button>
               </div>
