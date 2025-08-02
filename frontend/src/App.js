@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
 import { Badge } from './components/ui/badge';
 import { Alert, AlertDescription } from './components/ui/alert';
 import { Separator } from './components/ui/separator';
-import { GamepadIcon, ShoppingCartIcon, StarIcon, PhoneIcon, MailIcon, UserIcon, LockIcon, PlusIcon, EditIcon, TrashIcon, LogOutIcon } from 'lucide-react';
+import { GamepadIcon, ShoppingCartIcon, StarIcon, PhoneIcon, MailIcon, UserIcon, LockIcon, PlusIcon, EditIcon, TrashIcon, LogOutIcon, UserPlusIcon, UserCheckIcon } from 'lucide-react';
 
 const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
