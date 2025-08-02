@@ -28,6 +28,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [showOrderDialog, setShowOrderDialog] = useState(false);
   const [currentBanner, setCurrentBanner] = useState(0);
+  const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminToken, setAdminToken] = useState(localStorage.getItem('admin_token'));
   const [adminForm, setAdminForm] = useState({ username: '', password: '' });
