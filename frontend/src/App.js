@@ -423,8 +423,8 @@ export default function App() {
       </header>
 
       {/* Admin Login Modal */}
-      {!isAdmin && (
-        <Dialog open={!isAdmin} onOpenChange={() => {}}>
+      {showAdminLogin && !isAdmin && (
+        <Dialog open={showAdminLogin && !isAdmin} onOpenChange={setShowAdminLogin}>
           <DialogContent className="bg-gray-900 border-gray-700 text-white">
             <DialogHeader>
               <DialogTitle>دخول الإدارة</DialogTitle>
