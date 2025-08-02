@@ -814,31 +814,31 @@ export default function App() {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {games.map(game => (
-            <Card key={game.id} className="bg-gray-800/50 border-gray-700 hover:bg-gray-800/70 transition-all duration-300 backdrop-blur-sm">
+          {games.map((game, index) => (
+            <Card key={game.id} className={`bg-gray-800/50 border-gray-700 hover:bg-gray-800/70 transition-all duration-300 backdrop-blur-sm card-hover card-entrance delay-${index * 100}`}>
               <CardHeader className="pb-4">
                 <img
                   src={game.image_url}
                   alt={game.name_ar}
-                  className="w-full h-48 object-cover rounded-lg mb-4"
+                  className="w-full h-48 object-cover rounded-lg mb-4 hover-scale"
                 />
-                <CardTitle className="text-xl text-right">{game.name_ar}</CardTitle>
-                <CardDescription className="text-gray-400 text-right">
+                <CardTitle className="text-xl text-right gradient-text">{game.name_ar}</CardTitle>
+                <CardDescription className="text-gray-400 text-right arabic-text">
                   {game.description_ar}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {game.prices.map((pkg, index) => (
-                    <div key={index} className="flex justify-between items-center p-3 bg-gray-700/50 rounded-lg">
+                  {game.prices.map((pkg, pkgIndex) => (
+                    <div key={pkgIndex} className="flex justify-between items-center p-3 bg-gray-700/50 rounded-lg hover:bg-gray-700/70 transition-all">
                       <div className="text-right">
-                        <p className="font-semibold">{pkg.amount}</p>
+                        <p className="font-semibold arabic-text">{pkg.amount}</p>
                         <p className="text-sm text-gray-400">{pkg.price} {pkg.currency}</p>
                       </div>
                       <Button
                         size="sm"
                         onClick={() => handlePurchase(game, pkg)}
-                        className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                        className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 btn-hover-scale"
                       >
                         <ShoppingCartIcon className="w-4 h-4 ml-2" />
                         شراء
