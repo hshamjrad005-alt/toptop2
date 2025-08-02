@@ -101,6 +101,28 @@ class AdminLogin(BaseModel):
     username: str
     password: str
 
+class UserRegister(BaseModel):
+    username: str
+    email: EmailStr
+    password: str
+    full_name: str
+    phone: Optional[str] = None
+
+class UserLogin(BaseModel):
+    username: str
+    password: str
+
+class UserProfile(BaseModel):
+    full_name: str
+    email: EmailStr
+    phone: Optional[str] = None
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+    user_id: str
+    username: str
+
 # Admin authentication
 def verify_admin(credentials: HTTPAuthorizationCredentials = Depends(security)):
     if not credentials:
