@@ -345,6 +345,131 @@ def create_order(order: Order):
         "whatsapp_url": f"https://wa.me/967777826667?text=طلب جديد%0A----%0Aاللعبة: {order.game_name}%0Aالآي دي: {order.player_id}%0Aالكمية: {order.amount}%0Aالسعر: {order.price} {order.currency}%0Aاسم العميل: {order.customer_name}%0Aرقم الهاتف: {order.customer_phone}%0A----%0Aرقم الطلب: {order_data['id']}"
     }
 
+# User authentication routes
+@app.post("/api/users/register", response_model=Token)
+def register_user(user_data: UserRegister):
+    # Check if username already exists
+    if users_collection.find_one({"username": user_data.username}):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username already registered"
+        )
+    
+    # Check if email already exists
+    if users_collection.find_one({"email": user_data.email}):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email already registered"
+        )
+    
+    # Create new user
+    user_id = str(uuid.uuid4())
+    hashed_password = hash_password(user_data.password)
+    
+    new_user = {
+        "id": user_id,
+        "username": user_data.username,
+        "email": user_data.email,
+        "password": hashed_password,
+        "full_name": user_data.full_name,
+        "phone": user_data.phone,
+        "is_active": True,
+        "created_at": datetime.now().isoformat(),
+        "last_login": None
+    }
+    
+    users_collection.insert_one(new_user)
+    
+    # Create access token
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user_id}, expires_delta=access_token_expires
+    )
+    
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user_id": user_id,
+        "username": user_data.username
+    }
+
+@app.post("/api/users/login", response_model=Token)
+def login_user(user_data: UserLogin):
+    # Find user by username
+    user = users_collection.find_one({"username": user_data.username})
+    
+    if not user or not verify_password(user_data.password, user["password"]):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    if not user.get("is_active", True):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Inactive user"
+        )
+    
+    # Update last login
+    users_collection.update_one(
+        {"id": user["id"]},
+        {"$set": {"last_login": datetime.now().isoformat()}}
+    )
+    
+    # Create access token
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user["id"]}, expires_delta=access_token_expires
+    )
+    
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user_id": user["id"],
+        "username": user["username"]
+    }
+
+@app.get("/api/users/me")
+def get_user_profile(current_user=Depends(get_current_user)):
+    return current_user
+
+@app.put("/api/users/me")
+def update_user_profile(profile_data: UserProfile, current_user=Depends(get_current_user)):
+    # Check if email is being changed and if it's already taken
+    if profile_data.email != current_user["email"]:
+        if users_collection.find_one({"email": profile_data.email, "id": {"$ne": current_user["id"]}}):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Email already registered"
+            )
+    
+    # Update user profile
+    update_data = {
+        "full_name": profile_data.full_name,
+        "email": profile_data.email,
+        "phone": profile_data.phone,
+        "updated_at": datetime.now().isoformat()
+    }
+    
+    users_collection.update_one(
+        {"id": current_user["id"]},
+        {"$set": update_data}
+    )
+    
+    return {"success": True, "message": "Profile updated successfully"}
+
+@app.get("/api/users/orders")
+def get_user_orders(current_user=Depends(get_current_user)):
+    # Find orders by customer info (since we don't have user_id in orders yet)
+    # This is a simplified approach - in production, you'd link orders to user_id
+    orders = list(orders_collection.find(
+        {"customer_name": current_user["full_name"]},
+        {"_id": 0}
+    ).sort("created_at", -1))
+    
+    return {"orders": orders}
+
 # Admin routes
 @app.post("/api/admin/login")
 def admin_login(login_data: AdminLogin):
