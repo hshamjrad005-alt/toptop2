@@ -908,6 +908,11 @@ export default function App() {
                 <span>الكمية: {selectedPackage.amount}</span>
                 <span>السعر: {selectedPackage.price} {selectedPackage.currency}</span>
               </div>
+              {isLoggedIn && currentUser && (
+                <p className="text-xs text-green-400 mt-2">
+                  ✓ تم ملء البيانات تلقائياً من حسابك
+                </p>
+              )}
             </div>
           )}
 
