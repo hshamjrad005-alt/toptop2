@@ -1,13 +1,16 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import List, Optional
 import os
 from pymongo import MongoClient
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 import hashlib
+import jwt
+import bcrypt
+from passlib.context import CryptContext
 
 app = FastAPI()
 
