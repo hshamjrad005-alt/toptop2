@@ -28,12 +28,30 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [showOrderDialog, setShowOrderDialog] = useState(false);
   const [currentBanner, setCurrentBanner] = useState(0);
+  
+  // Admin states
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminToken, setAdminToken] = useState(localStorage.getItem('admin_token'));
   const [adminForm, setAdminForm] = useState({ username: '', password: '' });
   const [adminData, setAdminData] = useState({ games: [], news: [], banners: [], orders: [] });
   const [showAdminForm, setShowAdminForm] = useState({ type: '', show: false, data: null });
+  
+  // User states
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userToken, setUserToken] = useState(localStorage.getItem('user_token'));
+  const [currentUser, setCurrentUser] = useState(null);
+  const [showUserAuth, setShowUserAuth] = useState(false);
+  const [authMode, setAuthMode] = useState('login'); // 'login' or 'register'
+  const [showUserDashboard, setShowUserDashboard] = useState(false);
+  const [userForm, setUserForm] = useState({
+    username: '',
+    email: '',
+    password: '',
+    full_name: '',
+    phone: ''
+  });
+  const [userOrders, setUserOrders] = useState([]);
 
   useEffect(() => {
     fetchData();
