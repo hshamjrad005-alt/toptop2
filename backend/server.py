@@ -14,6 +14,14 @@ from passlib.context import CryptContext
 
 app = FastAPI()
 
+# Password hashing
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+# JWT settings
+SECRET_KEY = os.environ.get('JWT_SECRET_KEY', 'your-secret-key-change-in-production')
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30 * 24  # 30 days
+
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
