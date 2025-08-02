@@ -69,6 +69,13 @@ export default function App() {
     }
   }, [adminToken]);
 
+  useEffect(() => {
+    if (userToken) {
+      setIsLoggedIn(true);
+      fetchUserProfile();
+    }
+  }, [userToken]);
+
   const fetchData = async () => {
     try {
       const [gamesRes, newsRes, bannersRes] = await Promise.all([
