@@ -412,7 +412,7 @@ export default function App() {
             </div>
             <Button 
               variant="outline" 
-              onClick={() => setIsAdmin(true)}
+              onClick={() => setShowAdminLogin(true)}
               className="text-white border-gray-600 hover:bg-gray-800"
             >
               <UserIcon className="w-4 h-4 ml-2" />
