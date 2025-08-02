@@ -613,6 +613,127 @@ export default function App() {
         </Dialog>
       )}
 
+      {/* User Auth Modal */}
+      {showUserAuth && (
+        <Dialog open={showUserAuth} onOpenChange={setShowUserAuth}>
+          <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-md">
+            <DialogHeader>
+              <DialogTitle>
+                {authMode === 'login' ? 'تسجيل الدخول' : 'إنشاء حساب جديد'}
+              </DialogTitle>
+              <DialogDescription>
+                {authMode === 'login' 
+                  ? 'أدخل بيانات حسابك للدخول'
+                  : 'أنشئ حساباً جديداً للاستفادة من المزايا'
+                }
+              </DialogDescription>
+            </DialogHeader>
+            
+            <Tabs value={authMode} onValueChange={setAuthMode} className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="login">دخول</TabsTrigger>
+                <TabsTrigger value="register">تسجيل</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="login">
+                <form onSubmit={handleUserAuth} className="space-y-4">
+                  <div>
+                    <Label>اسم المستخدم</Label>
+                    <Input
+                      type="text"
+                      value={userForm.username}
+                      onChange={(e) => setUserForm({...userForm, username: e.target.value})}
+                      className="bg-gray-800 border-gray-600 text-white"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label>كلمة المرور</Label>
+                    <Input
+                      type="password"
+                      value={userForm.password}
+                      onChange={(e) => setUserForm({...userForm, password: e.target.value})}
+                      className="bg-gray-800 border-gray-600 text-white"
+                      required
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <Button type="submit" disabled={loading} className="flex-1">
+                      {loading ? 'جاري تسجيل الدخول...' : 'دخول'}
+                    </Button>
+                    <Button type="button" variant="outline" onClick={() => setShowUserAuth(false)}>
+                      إلغاء
+                    </Button>
+                  </div>
+                </form>
+              </TabsContent>
+              
+              <TabsContent value="register">
+                <form onSubmit={handleUserAuth} className="space-y-4">
+                  <div>
+                    <Label>اسم المستخدم *</Label>
+                    <Input
+                      type="text"
+                      value={userForm.username}
+                      onChange={(e) => setUserForm({...userForm, username: e.target.value})}
+                      className="bg-gray-800 border-gray-600 text-white"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label>البريد الإلكتروني *</Label>
+                    <Input
+                      type="email"
+                      value={userForm.email}
+                      onChange={(e) => setUserForm({...userForm, email: e.target.value})}
+                      className="bg-gray-800 border-gray-600 text-white"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label>الاسم الكامل *</Label>
+                    <Input
+                      type="text"
+                      value={userForm.full_name}
+                      onChange={(e) => setUserForm({...userForm, full_name: e.target.value})}
+                      className="bg-gray-800 border-gray-600 text-white"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label>رقم الهاتف</Label>
+                    <Input
+                      type="tel"
+                      value={userForm.phone}
+                      onChange={(e) => setUserForm({...userForm, phone: e.target.value})}
+                      className="bg-gray-800 border-gray-600 text-white"
+                    />
+                  </div>
+                  <div>
+                    <Label>كلمة المرور *</Label>
+                    <Input
+                      type="password"
+                      value={userForm.password}
+                      onChange={(e) => setUserForm({...userForm, password: e.target.value})}
+                      className="bg-gray-800 border-gray-600 text-white"
+                      required
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <Button type="submit" disabled={loading} className="flex-1">
+                      {loading ? 'جاري إنشاء الحساب...' : 'إنشاء حساب'}
+                    </Button>
+                    <Button type="button" variant="outline" onClick={() => setShowUserAuth(false)}>
+                      إلغاء
+                    </Button>
+                  </div>
+                </form>
+              </TabsContent>
+            </Tabs>
+          </DialogContent>
+        </Dialog>
+      )}
+
       {/* News Ticker */}
       <div className="bg-purple-600/20 border-y border-purple-500/30 py-2 overflow-hidden">
         <div className="animate-scroll whitespace-nowrap">
