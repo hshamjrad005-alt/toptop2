@@ -124,6 +124,42 @@ export default function App() {
     }
   };
 
+  const fetchUserProfile = async () => {
+    if (!userToken) return;
+    
+    try {
+      const headers = { 'Authorization': `Bearer ${userToken}` };
+      const response = await fetch(`${API_BASE_URL}/api/users/me`, { headers });
+      
+      if (response.ok) {
+        const userData = await response.json();
+        setCurrentUser(userData);
+      } else {
+        // Token might be invalid
+        handleUserLogout();
+      }
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      handleUserLogout();
+    }
+  };
+
+  const fetchUserOrders = async () => {
+    if (!userToken) return;
+    
+    try {
+      const headers = { 'Authorization': `Bearer ${userToken}` };
+      const response = await fetch(`${API_BASE_URL}/api/users/orders`, { headers });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setUserOrders(data.orders || []);
+      }
+    } catch (error) {
+      console.error('Error fetching user orders:', error);
+    }
+  };
+
   const handleAdminLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
