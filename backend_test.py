@@ -261,6 +261,190 @@ class GamingStoreAPITester:
 
         return True
 
+    def test_user_authentication(self):
+        """Test user registration and authentication system"""
+        print("\n👤 Testing User Authentication System...")
+        
+        # Test data for user registration
+        test_user_data = {
+            "username": "ahmad_test_2025",
+            "email": "ahmad.test@example.com",
+            "password": "SecurePass123!",
+            "full_name": "أحمد محمد التجريبي",
+            "phone": "+967777123456"
+        }
+        
+        # 1. Test user registration with valid data
+        success, response = self.run_api_test("User Registration (Valid)", "POST", "api/users/register", 200, test_user_data)
+        
+        user_token = None
+        user_id = None
+        
+        if success and response:
+            try:
+                result = response.json()
+                user_token = result.get('access_token')
+                user_id = result.get('user_id')
+                username = result.get('username')
+                token_type = result.get('token_type')
+                
+                if user_token and user_id and username == test_user_data['username'] and token_type == 'bearer':
+                    print(f"   🔑 JWT token received: {user_token[:20]}...")
+                    print(f"   🆔 User ID: {user_id}")
+                    print(f"   👤 Username: {username}")
+                else:
+                    success = False
+                    print("   ❌ Invalid registration response format")
+            except:
+                success = False
+                print("   ❌ Failed to parse registration response")
+        
+        # 2. Test duplicate username registration
+        duplicate_user = test_user_data.copy()
+        duplicate_user['email'] = "different@example.com"
+        self.run_api_test("User Registration (Duplicate Username)", "POST", "api/users/register", 400, duplicate_user)
+        
+        # 3. Test duplicate email registration
+        duplicate_email = test_user_data.copy()
+        duplicate_email['username'] = "different_username"
+        self.run_api_test("User Registration (Duplicate Email)", "POST", "api/users/register", 400, duplicate_email)
+        
+        # 4. Test user login with correct credentials
+        login_data = {
+            "username": test_user_data['username'],
+            "password": test_user_data['password']
+        }
+        
+        success, response = self.run_api_test("User Login (Valid Credentials)", "POST", "api/users/login", 200, login_data)
+        
+        if success and response:
+            try:
+                result = response.json()
+                login_token = result.get('access_token')
+                login_user_id = result.get('user_id')
+                
+                if login_token and login_user_id == user_id:
+                    print(f"   🔑 Login token received: {login_token[:20]}...")
+                    print(f"   ✅ User ID matches registration")
+                    # Update token for further tests
+                    user_token = login_token
+                else:
+                    print("   ❌ Invalid login response")
+            except:
+                print("   ❌ Failed to parse login response")
+        
+        # 5. Test user login with incorrect credentials
+        wrong_login = {
+            "username": test_user_data['username'],
+            "password": "WrongPassword123"
+        }
+        self.run_api_test("User Login (Invalid Password)", "POST", "api/users/login", 401, wrong_login)
+        
+        # 6. Test user login with non-existent username
+        nonexistent_login = {
+            "username": "nonexistent_user",
+            "password": "SomePassword123"
+        }
+        self.run_api_test("User Login (Non-existent User)", "POST", "api/users/login", 401, nonexistent_login)
+        
+        return user_token, user_id
+    
+    def test_user_profile_management(self, user_token, user_id):
+        """Test user profile management endpoints"""
+        if not user_token:
+            print("❌ No user token available, skipping profile tests")
+            return False
+            
+        print("\n👤 Testing User Profile Management...")
+        
+        auth_headers = {'Authorization': f'Bearer {user_token}'}
+        
+        # 7. Test getting user profile with valid token
+        success, response = self.run_api_test("Get User Profile (Valid Token)", "GET", "api/users/me", 200, headers=auth_headers)
+        
+        if success and response:
+            try:
+                profile = response.json()
+                expected_fields = ['id', 'username', 'email', 'full_name', 'phone', 'is_active', 'created_at']
+                missing_fields = [field for field in expected_fields if field not in profile]
+                
+                if not missing_fields:
+                    print(f"   ✅ Profile contains all expected fields")
+                    print(f"   👤 Full name: {profile.get('full_name')}")
+                    print(f"   📧 Email: {profile.get('email')}")
+                else:
+                    print(f"   ⚠️ Missing fields: {missing_fields}")
+                    
+                # Verify password is not included
+                if 'password' not in profile:
+                    print("   🔒 Password correctly excluded from profile")
+                else:
+                    print("   ❌ Password should not be in profile response")
+                    
+            except:
+                print("   ❌ Failed to parse profile response")
+        
+        # 8. Test getting user profile without token
+        self.run_api_test("Get User Profile (No Token)", "GET", "api/users/me", 401)
+        
+        # 9. Test getting user profile with invalid token
+        invalid_headers = {'Authorization': 'Bearer invalid_token_12345'}
+        self.run_api_test("Get User Profile (Invalid Token)", "GET", "api/users/me", 401, headers=invalid_headers)
+        
+        # 10. Test updating user profile with valid token
+        update_data = {
+            "full_name": "أحمد محمد المحدث",
+            "email": "ahmad.updated@example.com",
+            "phone": "+967777654321"
+        }
+        
+        success, response = self.run_api_test("Update User Profile (Valid)", "PUT", "api/users/me", 200, update_data, auth_headers)
+        
+        if success and response:
+            try:
+                result = response.json()
+                if result.get('success') and result.get('message'):
+                    print(f"   ✅ Profile update message: {result['message']}")
+                else:
+                    print("   ❌ Invalid update response format")
+            except:
+                print("   ❌ Failed to parse update response")
+        
+        # 11. Test updating profile with existing email (should fail)
+        # First create another user to test email conflict
+        another_user = {
+            "username": "another_test_user",
+            "email": "another@example.com",
+            "password": "AnotherPass123!",
+            "full_name": "مستخدم آخر",
+            "phone": "+967777999888"
+        }
+        
+        success, response = self.run_api_test("Create Another User", "POST", "api/users/register", 200, another_user)
+        
+        if success:
+            # Try to update first user's email to second user's email
+            conflict_update = {
+                "full_name": "أحمد محمد المحدث",
+                "email": "another@example.com",  # This should conflict
+                "phone": "+967777654321"
+            }
+            
+            self.run_api_test("Update Profile (Email Conflict)", "PUT", "api/users/me", 400, conflict_update, auth_headers)
+        
+        # 12. Test getting user orders
+        success, response = self.run_api_test("Get User Orders", "GET", "api/users/orders", 200, headers=auth_headers)
+        
+        if success and response:
+            try:
+                result = response.json()
+                orders = result.get('orders', [])
+                print(f"   📦 User has {len(orders)} orders")
+            except:
+                print("   ❌ Failed to parse orders response")
+        
+        return True
+    
     def test_unauthorized_access(self):
         """Test unauthorized access to admin endpoints"""
         print("\n🚫 Testing Unauthorized Access...")
