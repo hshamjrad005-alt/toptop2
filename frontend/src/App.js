@@ -196,6 +196,58 @@ export default function App() {
     localStorage.removeItem('admin_token');
   };
 
+  const handleUserLogout = () => {
+    setIsLoggedIn(false);
+    setUserToken(null);
+    setCurrentUser(null);
+    setUserOrders([]);
+    localStorage.removeItem('user_token');
+    setShowUserDashboard(false);
+  };
+
+  const handleUserAuth = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    
+    try {
+      const endpoint = authMode === 'login' ? '/api/users/login' : '/api/users/register';
+      const payload = authMode === 'login' 
+        ? { username: userForm.username, password: userForm.password }
+        : userForm;
+      
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        setUserToken(data.access_token);
+        localStorage.setItem('user_token', data.access_token);
+        setIsLoggedIn(true);
+        setShowUserAuth(false);
+        setUserForm({ username: '', email: '', password: '', full_name: '', phone: '' });
+        
+        const successMessage = authMode === 'login' 
+          ? 'تم تسجيل الدخول بنجاح!' 
+          : 'تم إنشاء الحساب بنجاح!';
+        alert(successMessage);
+      } else {
+        const errorMessage = authMode === 'login'
+          ? 'خطأ في بيانات الدخول'
+          : data.detail || 'خطأ في إنشاء الحساب';
+        alert(errorMessage);
+      }
+    } catch (error) {
+      console.error('Auth error:', error);
+      alert('حدث خطأ في العملية');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handlePurchase = (game, packageInfo) => {
     setSelectedGame(game);
     setSelectedPackage(packageInfo);
