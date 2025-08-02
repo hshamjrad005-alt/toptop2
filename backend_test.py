@@ -11,7 +11,7 @@ from datetime import datetime
 import hashlib
 
 class GamingStoreAPITester:
-    def __init__(self, base_url="https://fef7d33e-5102-43ff-a8a8-486a0ff9b4f2.preview.emergentagent.com"):
+    def __init__(self, base_url="https://502d06c6-1ffd-427a-8574-b27f12e9c681.preview.emergentagent.com"):
         self.base_url = base_url
         self.admin_token = None
         self.tests_run = 0
